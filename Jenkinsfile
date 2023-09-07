@@ -12,6 +12,7 @@ spec:
   containers:
   - name: build
     image: dpthub/eos-jenkins-agent-base:latest
+    imagePullPolicy: IfNotPresent
     command:
     - cat
     tty: true
