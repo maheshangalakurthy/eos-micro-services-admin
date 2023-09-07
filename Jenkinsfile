@@ -25,6 +25,12 @@ spec:
 """
 ) {
     node (label) {
+
+      stage('SCM Checkout') {
+        steps {
+          sh "git clone https://github.com/maheshangalakurthy/eos-micro-services-admin.git"
+        }
+      }
         stage ('Checkout SCM'){
           container('build') {
                 stage('Build a Maven project') {
