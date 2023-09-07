@@ -81,9 +81,9 @@ spec:
                 stage('Deploy Artifacts') {
                     rtMavenRun (
                     tool: "java", // Tool name from Jenkins configuration
-                    // useWrapper: true,
+                    useWrapper: true,
                     pom: 'pom.xml',
-                    goals: 'mvn clean install',
+                    goals: 'clean install',
                     deployerId: "MAVEN_DEPLOYER",
                     resolverId: "MAVEN_RESOLVER"
                   )
