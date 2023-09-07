@@ -1,36 +1,32 @@
-// def label = "eosagent"
-// def mvn_version = 'M2'
-// podTemplate(label: label, yaml: """
-// apiVersion: v1
-// kind: Pod
-// metadata:
-//   labels:
-//     app: build
-//   annotations:
-//     sidecar.istio.io/inject: "false"
-// spec:
-//   containers:
-//   - name: build
-//     image: dpthub/eos-jenkins-agent-base:latest
-//     command:
-//     - cat
-//     tty: true
-//     volumeMounts:
-//     - name: dockersock
-//       mountPath: /var/run/docker.sock
-//   volumes:
-//   - name: dockersock
-//     hostPath:
-//       path: /var/run/docker.sock
-// """
-// ) {
-//     
-pipeline {
-      agent{
-    kubernetes{
-        label 'slave'
-    }
-}
+def label = "eosagent"
+def mvn_version = 'M2'
+podTemplate(label: label, yaml: """
+apiVersion: v1
+kind: Pod
+metadata:
+  labels:
+    app: eosagent
+  annotations:
+    sidecar.istio.io/inject: "false"
+spec:
+  containers:
+  - name: build
+    image: dpthub/eos-jenkins-agent-base:latest
+    imagePullPolicy: IfNotPresent
+    command:
+    - cat
+    tty: true
+    volumeMounts:
+    - name: dockersock
+      mountPath: /var/run/docker.sock
+  volumes:
+  - name: dockersock
+    hostPath:
+      path: /var/run/docker.sock
+"""
+) {
+    node (label) {
+
      stage ('Checkout SCM'){
           git credentialsId: 'git', url: 'https://github.com/maheshangalakurthy/eos-micro-services-admin.git', branch: 'main'
           container('build') {
@@ -185,4 +181,4 @@ pipeline {
         }
       }
     }
-
+}
