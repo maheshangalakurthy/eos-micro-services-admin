@@ -26,15 +26,11 @@ spec:
 ) {
     node (label) {
 
-      stage('SCM Checkout') {
-        steps {
-          sh "git clone https://github.com/maheshangalakurthy/eos-micro-services-admin.git"
-        }
-      }
-        stage ('Checkout SCM'){
+     stage ('Checkout SCM'){
+          git credentialsId: 'git', url: 'https://github.com/maheshangalakurthy/eos-micro-services-admin.git', branch: 'main'
           container('build') {
-                stage('Build a Maven project') {
-                  sh './mvnw clean package' 
+                stage('Build a React Webapp') {
+                    sh 'CI=false npm run build'             
                 }
             }
         }
