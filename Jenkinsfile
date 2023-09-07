@@ -5,14 +5,13 @@ apiVersion: v1
 kind: Pod
 metadata:
   labels:
-    name: eosagent
+    app: build
   annotations:
     sidecar.istio.io/inject: "false"
 spec:
   containers:
   - name: build
     image: dpthub/eos-jenkins-agent-base:latest
-    imagePullPolicy: IfNotPresent
     command:
     - cat
     tty: true
