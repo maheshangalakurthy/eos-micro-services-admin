@@ -30,7 +30,7 @@ spec:
           git credentialsId: 'git', url: 'https://github.com/maheshangalakurthy/eos-micro-services-admin.git', branch: 'main'
           container('build') {
                 stage('Build a React Webapp') {
-                    sh './mvnw clean package -DskipTests=true'             
+                    sh 'sudo ./mvnw clean package -DskipTests=true'             
                 }
             }
         }
