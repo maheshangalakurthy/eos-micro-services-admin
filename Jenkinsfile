@@ -5,7 +5,7 @@ apiVersion: v1
 kind: Pod
 metadata:
   labels:
-    app: eosagent
+    name: eosagent
   annotations:
     sidecar.istio.io/inject: "false"
 spec:
