@@ -32,7 +32,9 @@ spec:
                   //withEnv( ["PATH+MAVEN=${tool mvn_version}/bin"] ) {
                    //sh "mvn clean package"
                   //  }
-                  sh 'mvn clean package' 
+                  sh "chmod -R 777 ./mvnw"
+                  sh './mvnw clean package' 
+                  
                    //sh 'mvn clean package'
                 }
             }
@@ -41,7 +43,7 @@ spec:
           container('build') {
                 stage('Sonar Scan') {
                   withSonarQubeEnv('sonar') {
-                  sh 'mvn verify org.sonarsource.scanner.maven:sonar-maven-plugin:sonar -Dsonar.projectKey=cloud4azureaws_eos'
+                  sh './mvnw verify org.sonarsource.scanner.maven:sonar-maven-plugin:sonar -Dsonar.projectKey=cloud4azureaws_eos'
                 }
                 }
             }
