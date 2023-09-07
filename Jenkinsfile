@@ -37,13 +37,13 @@ spec:
         }
         stage('Unit Tests and JoCoCo') {
             steps {
-              sh "./mvnw test"
+              sh "mvn test"
             }
         }
 
         stage('Mutation Tests - PIT') {
         steps {
-          sh "./mvnw org.pitest:pitest-maven:mutationCoverage"
+          sh "mvn org.pitest:pitest-maven:mutationCoverage"
         }
         post {
           always {
@@ -55,7 +55,7 @@ spec:
           container('build') {
                 stage('Sonar Scan') {
                   withSonarQubeEnv('sonar') {
-                  sh './mvnw verify org.sonarsource.scanner.maven:sonar-maven-plugin:sonar -Dsonar.projectKey=cloud4azureaws_eos'
+                  sh 'mvn verify org.sonarsource.scanner.maven:sonar-maven-plugin:sonar -Dsonar.projectKey=cloud4azureaws_eos'
                 }
                 }
             }
@@ -171,5 +171,14 @@ spec:
             }
         }
         }
+
+        post {
+        always {
+          
+          junit 'target/surefire-reports/*.xml'
+          jacoco execPattern: 'target/jacoco.exec'
+          
+        }
+      }
     }
 }
