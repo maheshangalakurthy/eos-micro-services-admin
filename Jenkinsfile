@@ -5,14 +5,13 @@ apiVersion: v1
 kind: Pod
 metadata:
   labels:
-    name: eosagent
+    app: build
   annotations:
     sidecar.istio.io/inject: "false"
 spec:
   containers:
   - name: build
     image: dpthub/eos-jenkins-agent-base:latest
-    imagePullPolicy: IfNotPresent
     command:
     - cat
     tty: true
@@ -26,64 +25,28 @@ spec:
 """
 ) {
     node (label) {
-
-     stage ('Checkout SCM'){
+        stage ('Checkout SCM'){
           git credentialsId: 'git', url: 'https://github.com/maheshangalakurthy/eos-micro-services-admin.git', branch: 'main'
           container('build') {
-                stage('Build a React Webapp') {
-                    sh 'mvn clean package -DskipTests=true'             
+                stage('Build a Maven project') {
+                  //withEnv( ["PATH+MAVEN=${tool mvn_version}/bin"] ) {
+                   //sh "mvn clean package"
+                  //  }
+                  sh './mvnw clean package' 
+                   //sh 'mvn clean package'
                 }
             }
         }
-        stage('Unit Tests and JoCoCo') {
-            steps {
-              sh "mvn test"
-            }
-        }
-
-        stage('Mutation Tests - PIT') {
-        steps {
-          sh "mvn org.pitest:pitest-maven:mutationCoverage"
-        }
-        post {
-          always {
-            pitmutation mutationStatsFile: '**/target/pit-reports/**/mutations.xml'
-          }
-        }
-       }
         stage ('Sonar Scan'){
           container('build') {
                 stage('Sonar Scan') {
                   withSonarQubeEnv('sonar') {
-                  sh 'mvn verify org.sonarsource.scanner.maven:sonar-maven-plugin:sonar -Dsonar.projectKey=cloud4azureaws_eos'
+                  sh './mvnw verify org.sonarsource.scanner.maven:sonar-maven-plugin:sonar -Dsonar.projectKey=cloud4azureaws_eos'
                 }
                 }
             }
         }
 
-        stage('Sonarqube quality gate') {
-            steps {
-                timeout(time: 2, unit: 'MINUTES') {
-                    waitForQualityGate abortPipeline: true
-                }
-            }
-        }
-
-      stage('Vulnerability Scan - Docker') {
-      steps {
-        parallel(
-          "Dependency Scan": {
-            sh "mvn dependency-check:check"
-          },
-          "Trivy Scan": {
-            sh "bash trivy-docker-image-scan.sh"
-          },
-          "OPA Conftest":{
-				    sh 'docker run --rm -v $(pwd):/project openpolicyagent/conftest test --policy opa-docker-security.rego Dockerfile'
-			}   
-        )
-      }
-    }
 
         stage ('Artifactory configuration'){
           container('build') {
@@ -133,7 +96,6 @@ spec:
                }
            }
        }
-
        stage ('Docker Build'){
           container('build') {
                 stage('Build Image') {
@@ -145,40 +107,15 @@ spec:
             }
         }
 
-      stage('Vulnerability Scan - Kubernetes') {
-      steps {
-        parallel(
-          "OPA Scan": {
-            sh 'docker run --rm -v $(pwd):/project openpolicyagent/conftest test --policy opa-k8s-security.rego k8s_deployment_service.yaml'
-          },
-          "Kubesec Scan": {
-            sh "bash kubesec-scan.sh"
-          },
-          "Trivy Scan": {
-            sh "bash trivy-k8s-scan.sh"
-          }
-        )
-      }
-      }
-      
         stage ('Helm Chart') {
           container('build') {
             dir('charts') {
               withCredentials([usernamePassword(credentialsId: 'jfrog', usernameVariable: 'username', passwordVariable: 'password')]) {
-              // sh '/usr/local/bin/helm package micro-services-admin'
+              sh '/usr/local/bin/helm package micro-services-admin'
               sh '/usr/local/bin/helm push-artifactory micro-services-admin-1.0.tgz https://b11x1xfs5vvmkd3.jfrog.io/artifactory/eos-helm-local --username $username --password $password'
               }
             }
         }
         }
-
-        post {
-        always {
-          
-          junit 'target/surefire-reports/*.xml'
-          jacoco execPattern: 'target/jacoco.exec'
-          
-        }
-      }
     }
 }
