@@ -43,6 +43,7 @@ spec:
           container('build') {
                 stage('Sonar Scan') {
                   withSonarQubeEnv('sonar') {
+                  sh "chmod -R 777 ./mvnw"
                   sh './mvnw verify org.sonarsource.scanner.maven:sonar-maven-plugin:sonar -Dsonar.projectKey=cloud4azureaws_eos'
                 }
                 }
@@ -80,9 +81,9 @@ spec:
                 stage('Deploy Artifacts') {
                     rtMavenRun (
                     tool: "java", // Tool name from Jenkins configuration
-                    useWrapper: true,
+                    // useWrapper: true,
                     pom: 'pom.xml',
-                    goals: 'clean install',
+                    goals: 'mvn clean install',
                     deployerId: "MAVEN_DEPLOYER",
                     resolverId: "MAVEN_RESOLVER"
                   )
