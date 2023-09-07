@@ -26,7 +26,6 @@ spec:
 ) {
     node (label) {
         stage ('Checkout SCM'){
-          git credentialsId: 'git', url: 'https://github.com/maheshangalakurthy/eos-micro-services-admin.git', branch: 'main'
           container('build') {
                 stage('Build a Maven project') {
                   sh './mvnw clean package' 
