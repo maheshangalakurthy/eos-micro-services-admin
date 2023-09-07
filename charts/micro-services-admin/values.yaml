@@ -1,0 +1,4 @@
+deployment:
+  replicas: 1
+ingress:
+  host: dev-micro-services-admin.cloud4azureaws.link
