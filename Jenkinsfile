@@ -55,8 +55,8 @@ spec:
          
           withDockerRegistry([credentialsId: "docker", url: ""]) {
           sh 'printenv'
-          sh 'sudo docker build -t angalakurthymahesh/eos-micro-services-admin:latest .'
-          sh 'docker push angalakurthymahesh/eos-micro-services-admin:latest'
+          // sh 'sudo docker build -t angalakurthymahesh/eos-micro-services-admin:latest .'
+          // sh 'docker push angalakurthymahesh/eos-micro-services-admin:latest'
         }
         }
        }   
