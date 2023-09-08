@@ -50,16 +50,18 @@ spec:
             }
         }
        
-        stage('Docker Build and Push') {
-        steps {
-         
-          withDockerRegistry([credentialsId: "docker", url: ""]) {
-          sh 'printenv'
-          // sh 'sudo docker build -t angalakurthymahesh/eos-micro-services-admin:latest .'
-          // sh 'docker push angalakurthymahesh/eos-micro-services-admin:latest'
+
+       stage ('Docker Build'){
+          container('build') {
+                stage('Build Image') {
+                     withDockerRegistry([credentialsId: "docker", url: ""]) {
+                      sh 'printenv'
+                      sh 'sudo docker build -t angalakurthymahesh/eos-micro-services-admin:latest .'
+                      sh 'docker push angalakurthymahesh/eos-micro-services-admin:latest'
         }
+                }
+            }
         }
-       }   
 
         stage ('Helm Chart') {
           container('build') {
