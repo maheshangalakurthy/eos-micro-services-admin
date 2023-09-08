@@ -49,15 +49,6 @@ spec:
                 }
             }
         }
-        stage ('Publish build info') {
-            container('build') {
-                stage('Publish build info') {
-                rtPublishBuildInfo (
-                    serverId: "jfrog"
-                  )
-               }
-           }
-       }
        
        stage ('Docker Build'){
           container('build') {
