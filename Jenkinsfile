@@ -50,16 +50,16 @@ spec:
             }
         }
        
-       stage ('Docker Build'){
-          container('build') {
-                stage('Build Image') {
-                    docker.withRegistry( 'https://registry.hub.docker.com', 'docker' ) {
-                    def customImage = docker.build("angalakurthymahesh/eos-micro-services-admin:latest")
-                    customImage.push()             
-                    }
-                }
-            }
+        stage('Docker Build and Push') {
+        steps {
+         
+          withDockerRegistry([credentialsId: "docker", url: ""]) {
+          sh 'printenv'
+          sh 'sudo docker build -t angalakurthymahesh/eos-micro-services-admin:latest .'
+          sh 'docker push angalakurthymahesh/eos-micro-services-admin:latest'
         }
+        }
+       }   
 
         stage ('Helm Chart') {
           container('build') {
