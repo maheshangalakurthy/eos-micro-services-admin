@@ -34,7 +34,7 @@ pipeline {
     stage('SonarQube - SAST') {
       steps {
         withSonarQubeEnv('SonarQube') {
-          ./mvnw verify org.sonarsource.scanner.maven:sonar-maven-plugin:sonar -Dsonar.projectKey=cloud4azureaws_eos
+         sh './mvnw verify org.sonarsource.scanner.maven:sonar-maven-plugin:sonar -Dsonar.projectKey=cloud4azureaws_eos'
         }
       }
     }
