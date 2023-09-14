@@ -11,7 +11,7 @@ metadata:
 spec:
   containers:
   - name: build
-    image: dpthub/eos-jenkins-agent-base:latest
+    image: angalakurthymahesh/eos-jenkins-agent-base:latest
     command:
     - cat
     tty: true
@@ -32,7 +32,7 @@ spec:
                   //withEnv( ["PATH+MAVEN=${tool mvn_version}/bin"] ) {
                    //sh "mvn clean package"
                   //  }
-                  sh "chmod -R 777 ./mvnw"
+                 // sh "chmod -R 777 ./mvnw"
                   sh './mvnw clean package' 
                   
                    //sh 'mvn clean package'
@@ -49,29 +49,16 @@ spec:
                 }
             }
         }
-       
 
-       stage ('Docker Build'){
+        stage ('Docker Build'){
           container('build') {
-                
-                     withDockerRegistry([credentialsId: "docker", url: ""]) {
-                      sh 'printenv'
-                      sh 'sudo docker build -t angalakurthymahesh/eos-micro-services-admin:latest .'
-                      sh 'docker push angalakurthymahesh/eos-micro-services-admin:latest'
-        }
-                
+                stage('Build Image') {
+                    docker.withRegistry( 'https://registry.hub.docker.com', 'docker' ) {
+                    def customImage = docker.build("angalakurthymahesh/eos-micro-services-admin:latest")
+                    customImage.push()             
+                    }
+                }
             }
-        }
-
-        stage ('Helm Chart') {
-          container('build') {
-            dir('charts') {
-              withCredentials([usernamePassword(credentialsId: 'jfrog', usernameVariable: 'username', passwordVariable: 'password')]) {
-              sh '/usr/local/bin/helm package micro-services-admin'
-              sh '/usr/local/bin/helm push-artifactory micro-services-admin-1.0.tgz https://b11x1xfs5vvmkd3.jfrog.io/artifactory/eos-helm-local --username $username --password $password'
-              }
-            }
-        }
         }
     }
 }
