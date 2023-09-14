@@ -32,7 +32,7 @@ spec:
            sh 'chmod 0777 *'
         }
       }
-        stage ('Checkout SCM'){
+        stage ('Build Artifact'){
           container('build') {
                 stage('Build a Maven project') {
                  // sh "chmod -R 777 ./mvnw"
@@ -41,9 +41,20 @@ spec:
                 }
             }
         }
+
+      stage ('Jacoco'){
+          container('build') {
+                stage('Unit Tests and JoCoCo') {
+                 // sh "chmod -R 777 ./mvnw"
+                  sh 'ls -ltr'
+                  sh './mvnw test' 
+                }
+            }
+        }
+
         stage ('Sonar Scan'){
           container('build') {
-                stage('Sonar Scan') {
+                stage('Sonar stage') {
                   withSonarQubeEnv('sonar') {
                   sh "chmod -R 777 ./mvnw"
                   sh './mvnw verify org.sonarsource.scanner.maven:sonar-maven-plugin:sonar -Dsonar.projectKey=cloud4azureaws_eos'
@@ -52,15 +63,15 @@ spec:
             }
         }
 
-        stage ('Docker Build'){
-          container('build') {
-                stage('Build Image') {
-                    docker.withRegistry( 'https://index.docker.io/v1/', 'docker' ) {
-                    def customImage = docker.build("angalakurthymahesh/eos-micro-services-admin:latest")
-                    customImage.push()             
-                    }
-                }
-            }
-        }
+        // stage ('Docker Build'){
+        //   container('build') {
+        //         stage('Build Image') {
+        //             docker.withRegistry( 'https://registry.hub.docker.com', 'docker' ) {
+        //             def customImage = docker.build("angalakurthymahesh/eos-micro-services-admin:latest")
+        //             customImage.push()             
+        //             }
+        //         }
+        //     }
+        // }
     }
 }
