@@ -31,6 +31,7 @@ spec:
                 stage('Build a Maven project') {
                  // sh "chmod -R 777 ./mvnw"
                   sh 'whoami'
+                  sh 'ls -ltr'
                   sh './mvnw clean package' 
                 }
             }
