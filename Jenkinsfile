@@ -55,7 +55,7 @@ spec:
         stage ('Docker Build'){
           container('build') {
                 stage('Build Image') {
-                    docker.withRegistry( 'https://registry.hub.docker.com', 'docker' ) {
+                    docker.withRegistry( 'https://index.docker.io/v1/', 'docker' ) {
                     def customImage = docker.build("angalakurthymahesh/eos-micro-services-admin:latest")
                     customImage.push()             
                     }
