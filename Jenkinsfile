@@ -27,7 +27,7 @@ spec:
     node (label) {
       // SCM Checkout
       stage('SCM Checkout') {
-        steps {
+        container('build') {
            git credentialsId: 'git', url: 'https://github.com/maheshangalakurthy/eos-micro-services-admin.git', branch: 'main'
            sh 'chmod 0777 *'
         }
