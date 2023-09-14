@@ -29,5 +29,6 @@ pipeline {
          withSonarQubeEnv('SonarQube') {
             sh './mvnw verify org.sonarsource.scanner.maven:sonar-maven-plugin:sonar -Dsonar.projectKey=cloud4azureaws_eos'
          }
+       }
   }
 }
