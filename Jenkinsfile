@@ -46,7 +46,6 @@ spec:
           container('build') {
                 stage('Unit Tests and JoCoCo') {
                  // sh "chmod -R 777 ./mvnw"
-                  sh 'ls -ltr'
                   sh './mvnw test' 
                 }
             }
@@ -56,7 +55,6 @@ spec:
           container('build') {
                 stage('Sonar stage') {
                   withSonarQubeEnv('sonar') {
-                  sh "chmod -R 777 ./mvnw"
                   sh './mvnw verify org.sonarsource.scanner.maven:sonar-maven-plugin:sonar -Dsonar.projectKey=cloud4azureaws_eos'
                 }
                 }
@@ -73,5 +71,15 @@ spec:
         //         }
         //     }
         // }
+
+         post {
+        always {
+          // dependencyCheckPublisher pattern: 'target/dependency-check-report.xml'
+          junit 'target/surefire-reports/*.xml'
+          jacoco execPattern: 'target/jacoco.exec'
+          // publishHTML([allowMissing: false, alwaysLinkToLastBuild: true, keepAll: true, reportDir: 'owasp-zap-report', reportFiles: 'zap_report.html', reportName: 'OWASP ZAP HTML Report', reportTitles: 'OWASP ZAP HTML Report'])
+          // sendNotification currentBuild.result
+        }
+      }
     }
 }
