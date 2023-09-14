@@ -30,7 +30,7 @@ spec:
           container('build') {
                 stage('Build a Maven project') {
                  // sh "chmod -R 777 ./mvnw"
-                  sh 'whoami'
+                  sh 'chmod 0777 *'
                   sh 'ls -ltr'
                   sh './mvnw clean package' 
                 }
