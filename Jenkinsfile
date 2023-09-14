@@ -8,7 +8,7 @@ pipeline {
 
      stage('SCM Checkout') {
         steps {
-          sh "git clone https://github.com/maheshangalakurthy/eos-micro-services-admin.git"
+          // sh "git clone https://github.com/maheshangalakurthy/eos-micro-services-admin.git"
           sh "chmod 0777 *"
         }
       }
