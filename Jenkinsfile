@@ -1,84 +1,42 @@
-def label = "eosagent"
-def mvn_version = 'M2'
-podTemplate(label: label, yaml: """
-apiVersion: v1
-kind: Pod
-metadata:
-  labels:
-    app: build
-  annotations:
-    sidecar.istio.io/inject: "false"
-spec:
-  containers:
-  - name: build
-    image: angalakurthymahesh/eos-jenkins-agent-base:latest
-    command:
-    - cat
-    tty: true
-    volumeMounts:
-    - name: dockersock
-      mountPath: /var/run/docker.sock
-  volumes:
-  - name: dockersock
-    hostPath:
-      path: /var/run/docker.sock
-"""
-) {
-    node (label) {
-      // SCM Checkout
-      stage('SCM Checkout') {
-        container('build') {
-           git credentialsId: 'git', url: 'https://github.com/maheshangalakurthy/eos-micro-services-admin.git', branch: 'main'
-           sh 'chmod 0777 *'
+pipeline {
+  agent any
+  environment {
+    imageName = "angalakurthymahesh/eos-micro-service-admin:${GIT_COMMIT}"
+  }
+
+  stages {
+    stage ('SCM Checkout') {
+      sh "git clone https://github.com/maheshangalakurthy/eos-micro-services-admin.git"
+    }
+
+    stage('Build Artifact') {
+      sh './mvnw clean package -DskipTests=true'
+      archive 'target/*.jar' 
+    }
+
+    stage('Unit Tests and JoCoCo') {
+            steps {
+              sh "./mvnw test"
+            }
+    }
+
+    stage('Mutation Tests - PIT') {
+        steps {
+          sh "./mvnw org.pitest:pitest-maven:mutationCoverage"
+        }
+        post {
+          always {
+            pitmutation mutationStatsFile: '**/target/pit-reports/**/mutations.xml'
+          }
+        }
+       }
+
+    stage('SonarQube - SAST') {
+      steps {
+        withSonarQubeEnv('SonarQube') {
+          ./mvnw verify org.sonarsource.scanner.maven:sonar-maven-plugin:sonar -Dsonar.projectKey=cloud4azureaws_eos
         }
       }
-        stage ('Build Artifact'){
-          container('build') {
-                stage('Build a Maven project') {
-                 // sh "chmod -R 777 ./mvnw"
-                  sh 'ls -ltr'
-                  sh './mvnw clean package' 
-                }
-            }
-        }
-
-      stage ('Jacoco'){
-          container('build') {
-                stage('Unit Tests and JoCoCo') {
-                 // sh "chmod -R 777 ./mvnw"
-                  sh './mvnw test' 
-                }
-           always {
-                  // dependencyCheckPublisher pattern: 'target/dependency-check-report.xml'
-                  junit 'target/surefire-reports/*.xml'
-                  jacoco execPattern: 'target/jacoco.exec'
-                }
-            }
-          
-               
-            }
-
-        stage ('Sonar Scan'){
-          container('build') {
-                stage('Sonar stage') {
-                  withSonarQubeEnv('sonar') {
-                  sh './mvnw verify org.sonarsource.scanner.maven:sonar-maven-plugin:sonar -Dsonar.projectKey=cloud4azureaws_eos'
-                }
-                }
-            }
-        }
-
-        // stage ('Docker Build'){
-        //   container('build') {
-        //         stage('Build Image') {
-        //             docker.withRegistry( 'https://registry.hub.docker.com', 'docker' ) {
-        //             def customImage = docker.build("angalakurthymahesh/eos-micro-services-admin:latest")
-        //             customImage.push()             
-        //             }
-        //         }
-        //     }
-        // }
-
-        
     }
+  }
 }
