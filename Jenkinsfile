@@ -28,47 +28,19 @@ spec:
       // SCM Checkout
       stage('SCM Checkout') {
         steps {
-          git credentialsId: 'git', url: 'https://github.com/maheshangalakurthy/eos-micro-services-admin.git', branch: 'main'
-          sh 'chmod 0777 *'
+           git credentialsId: 'git', url: 'https://github.com/maheshangalakurthy/eos-micro-services-admin.git', branch: 'main'
+           sh 'chmod 0777 *'
         }
       }
-
-      // stage('Build Artifact') {
-      //    container('build') {
-      //      stage('Build Artifact') {
-      //       steps {
-      //         sh "./mvnw clean package -DskipTests=true"
-      //         archive 'target/*.jar' 
-      //       }
-      //   } 
-      //  }
-      // }
-
-      // stage('Unit Tests and JoCoCo') {
-      //    container('build') {
-      //      stage('Unit Tests and JoCoCo') {
-      //       steps {
-      //         sh "./mvnw test"
-      //       }
-      //   }
-      //    }
-      // }
-
-      // stage('Mutation Tests - PIT') {
-      //    container('build') {
-      //      stage('Unit Tests and JoCoCo') {
-      //       steps {
-      //         sh "./mvnw org.pitest:pitest-maven:mutationCoverage"
-      //       }
-      //       post {
-      //     always {
-      //       pitmutation mutationStatsFile: '**/target/pit-reports/**/mutations.xml'
-      //     }
-      //   }
-      //   }
-      //    }
-      // }
-
+        stage ('Checkout SCM'){
+          container('build') {
+                stage('Build a Maven project') {
+                 // sh "chmod -R 777 ./mvnw"
+                  sh 'ls -ltr'
+                  sh './mvnw clean package' 
+                }
+            }
+        }
         stage ('Sonar Scan'){
           container('build') {
                 stage('Sonar Scan') {
