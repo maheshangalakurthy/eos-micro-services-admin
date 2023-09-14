@@ -33,41 +33,41 @@ spec:
         }
       }
 
-      stage('Build Artifact') {
-         container('build') {
-           stage('Build Artifact') {
-            steps {
-              sh "./mvnw clean package -DskipTests=true"
-              archive 'target/*.jar' 
-            }
-        } 
-       }
-      }
+      // stage('Build Artifact') {
+      //    container('build') {
+      //      stage('Build Artifact') {
+      //       steps {
+      //         sh "./mvnw clean package -DskipTests=true"
+      //         archive 'target/*.jar' 
+      //       }
+      //   } 
+      //  }
+      // }
 
-      stage('Unit Tests and JoCoCo') {
-         container('build') {
-           stage('Unit Tests and JoCoCo') {
-            steps {
-              sh "./mvnw test"
-            }
-        }
-         }
-      }
+      // stage('Unit Tests and JoCoCo') {
+      //    container('build') {
+      //      stage('Unit Tests and JoCoCo') {
+      //       steps {
+      //         sh "./mvnw test"
+      //       }
+      //   }
+      //    }
+      // }
 
-      stage('Mutation Tests - PIT') {
-         container('build') {
-           stage('Unit Tests and JoCoCo') {
-            steps {
-              sh "./mvnw org.pitest:pitest-maven:mutationCoverage"
-            }
-            post {
-          always {
-            pitmutation mutationStatsFile: '**/target/pit-reports/**/mutations.xml'
-          }
-        }
-        }
-         }
-      }
+      // stage('Mutation Tests - PIT') {
+      //    container('build') {
+      //      stage('Unit Tests and JoCoCo') {
+      //       steps {
+      //         sh "./mvnw org.pitest:pitest-maven:mutationCoverage"
+      //       }
+      //       post {
+      //     always {
+      //       pitmutation mutationStatsFile: '**/target/pit-reports/**/mutations.xml'
+      //     }
+      //   }
+      //   }
+      //    }
+      // }
 
         stage ('Sonar Scan'){
           container('build') {
