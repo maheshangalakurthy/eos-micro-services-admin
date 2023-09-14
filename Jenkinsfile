@@ -48,16 +48,15 @@ spec:
                  // sh "chmod -R 777 ./mvnw"
                   sh './mvnw test' 
                 }
-          
-            }
-            post {
-                always {
+           always {
                   // dependencyCheckPublisher pattern: 'target/dependency-check-report.xml'
                   junit 'target/surefire-reports/*.xml'
                   jacoco execPattern: 'target/jacoco.exec'
                 }
-              }
-        }
+            }
+          
+               
+            }
 
         stage ('Sonar Scan'){
           container('build') {
